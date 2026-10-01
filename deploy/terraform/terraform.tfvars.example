@@ -1,0 +1,10 @@
+# Copy to terraform.tfvars and fill in. Never commit terraform.tfvars (it holds your token).
+
+do_token            = "dop_v1_your_digitalocean_api_token"
+ssh_key_fingerprint = "aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99"
+my_ip               = "203.0.113.5/32"   # your public IP; dashboards are limited to this
+endpoint_ip         = "203.0.113.5/32"   # the Windows endpoint's public IP (often the same)
+
+# Optional overrides:
+# region       = "fra1"
+# droplet_size = "s-4vcpu-16gb"

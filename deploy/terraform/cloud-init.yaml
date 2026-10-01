@@ -1,0 +1,20 @@
+#cloud-config
+# Runs once when the droplet first boots: installs prerequisites and clones the repo,
+# so the box is ready for deploy/setup.sh. Secrets are NOT baked in here - you set them
+# in deploy/.env after you SSH in.
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - git
+  - jq
+  - curl
+  - ca-certificates
+
+runcmd:
+  - [ bash, -c, "curl -fsSL https://get.docker.com | sh" ]
+  - [ systemctl, enable, --now, docker ]
+  - [ git, clone, --depth, "1", "${repo_url}", /opt/SOC-Automation-Home-Lab ]
+  - [ bash, -c, "echo 'vm.max_map_count=262144' >> /etc/sysctl.conf && sysctl -p" ]
+  - [ bash, -c, "echo 'SOC lab VM ready. cd /opt/SOC-Automation-Home-Lab/deploy && sudo ./setup.sh' > /etc/motd" ]
