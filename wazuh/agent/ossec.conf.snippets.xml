@@ -1,0 +1,28 @@
+<!--
+  Snippets for the Wazuh Agent on the Windows 10 endpoint.
+  Config file location: C:\Program Files (x86)\ossec-agent\ossec.conf
+  Restart the agent service after editing (services.msc -> Wazuh, or):
+    Restart-Service -Name WazuhSvc
+-->
+
+<!--
+  STEP 1 - Collect Sysmon telemetry.
+  Sysmon writes rich process/network/registry events to its own channel.
+  This tells the agent to ship that channel to the manager, where our
+  local_rules.xml turns Event ID 1 / 10 into Mimikatz alerts.
+-->
+<localfile>
+  <location>Microsoft-Windows-Sysmon/Operational</location>
+  <log_format>eventchannel</log_format>
+</localfile>
+
+<!-- Standard Windows security/audit channels, useful for login and policy events. -->
+<localfile>
+  <location>Security</location>
+  <log_format>eventchannel</log_format>
+</localfile>
+
+<localfile>
+  <location>Microsoft-Windows-PowerShell/Operational</location>
+  <log_format>eventchannel</log_format>
+</localfile>

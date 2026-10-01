@@ -1,0 +1,38 @@
+<!--
+  Snippets to add to the Wazuh Manager configuration: /var/ossec/etc/ossec.conf
+  Do not replace the whole file - merge these blocks into the existing <ossec_config>.
+  Restart the manager after editing:  systemctl restart wazuh-manager
+-->
+
+<!--
+  STEP 3 - Forward alerts to Shuffle.
+  The integrator daemon POSTs every alert at or above <level> to the Shuffle
+  webhook as JSON. Level 12 keeps noise down: our Mimikatz rules are level 15,
+  the LSASS rule is level 12, so all of them are forwarded.
+  The hook URL comes from the Webhook trigger inside the Shuffle workflow.
+-->
+<integration>
+  <name>shuffle</name>
+  <hook_url>https://YOUR-SHUFFLE-HOST/api/v1/hooks/webhook_REPLACE-WITH-YOUR-ID</hook_url>
+  <level>12</level>
+  <alert_format>json</alert_format>
+</integration>
+
+<!--
+  STEP 8 - Active response command used to remediate the endpoint.
+  Shuffle (after analyst approval) calls the Wazuh API, which tells the agent
+  to run this command locally on the Windows 10 host.
+  The matching script lives in: wazuh/agent/active-response/remove-threat.*
+-->
+<command>
+  <name>remove-threat</name>
+  <executable>remove-threat.exe</executable>
+  <timeout_allowed>no</timeout_allowed>
+</command>
+
+<active-response>
+  <command>remove-threat</command>
+  <location>local</location>
+  <!-- Triggered on demand through the API, not automatically, so the SOC
+       analyst stays in the loop before anything is deleted on the endpoint. -->
+</active-response>
