@@ -1,0 +1,13 @@
+# Secrets and local config
+.env
+deploy/.env
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+
+.DS_Store

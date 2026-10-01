@@ -5,6 +5,8 @@
 ![TheHive](https://img.shields.io/badge/Case%20Mgmt-TheHive-FFB300)
 ![Sysmon](https://img.shields.io/badge/Telemetry-Sysmon-512BD4)
 ![MITRE ATT&CK](https://img.shields.io/badge/ATT%26CK-T1003.001-red)
+![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
 A hands-on **Security Operations Centre** built from open-source tools, wiring
 **detection → automation → enrichment → case management → response** into a single
@@ -74,13 +76,27 @@ A level-15 alert triggers the whole automation chain.
 │   ├── manager/         custom detection rules + ossec.conf integration snippets
 │   └── agent/           agent config + the remove-threat active-response script
 ├── shuffle/             the SOAR workflow, node by node, with request bodies
-└── playbooks/           incident-response playbook for the detection
+├── playbooks/           incident-response playbook for the detection
+└── deploy/              infrastructure as code: Terraform + one-command setup.sh
 ```
 
-## How to build it
+## Deploy it
 
-Follow the guides in order, starting with **[docs/01-architecture.md](docs/01-architecture.md)**.
-In short:
+**Automated (recommended)** — infrastructure as code brings the whole server stack up
+on a cloud VM. See **[deploy/README.md](deploy/README.md)**:
+
+```bash
+cd deploy/terraform && terraform apply      # provision the VM + firewall
+ssh root@<server-ip>
+cd /opt/SOC-Automation-Home-Lab/deploy && sudo ./setup.sh   # Wazuh + Shuffle + TheHive
+terraform destroy                           # when done, to stop cloud charges
+```
+
+The stack needs ~16 GB RAM, so it runs on a cloud VM; the spin-up → test → destroy
+pattern keeps the cost to a few dollars.
+
+**Manual** — follow the guides in order, starting with
+**[docs/01-architecture.md](docs/01-architecture.md)**. In short:
 
 1. Stand up the **Wazuh Manager** and load the custom rules.
 2. Install **Sysmon** + the **Wazuh Agent** on an isolated Windows 10 VM.
@@ -111,6 +127,7 @@ In short:
 - **SOAR** design in Shuffle: IOC enrichment, case creation, and API-driven response
 - Where to put a **human in the loop** and why destructive automation needs a gate
 - Writing an **incident-response playbook** that follows the SANS phases
+- **Infrastructure as code**: provisioning the lab with Terraform and a one-command Docker deploy
 
 ## Credits
 

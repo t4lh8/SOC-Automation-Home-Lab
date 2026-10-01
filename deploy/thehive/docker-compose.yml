@@ -1,0 +1,45 @@
+# Minimal single-node TheHive 5 deployment for the lab.
+# Data in Cassandra, search index and file storage kept local on a volume.
+# For production you'd split these out (Elasticsearch, MinIO) - overkill for a home lab.
+
+services:
+  cassandra:
+    image: cassandra:4.1
+    container_name: thehive-cassandra
+    restart: unless-stopped
+    environment:
+      - MAX_HEAP_SIZE=1G
+      - HEAP_NEWSIZE=1G
+      - CASSANDRA_CLUSTER_NAME=thehive
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status | grep -q '^UN'"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+
+  thehive:
+    image: strangebee/thehive:5.2
+    container_name: thehive
+    restart: unless-stopped
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    ports:
+      - "9000:9000"
+    environment:
+      - JVM_OPTS=-Xms1g -Xmx1g
+    command:
+      - --no-config
+      - --cortex-port
+      - "0"
+    volumes:
+      - thehive-data:/opt/thp/thehive/data
+      - thehive-index:/opt/thp/thehive/index
+      - ./application.conf:/etc/thehive/application.conf:ro
+
+volumes:
+  cassandra-data:
+  thehive-data:
+  thehive-index:
