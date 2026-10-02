@@ -26,10 +26,10 @@ docker compose up -d
 
 Step 5 of the workflow POSTs an alert to `/api/v1/alert` with:
 
-- **title** — the Wazuh rule description (e.g. "Mimikatz credential-dumping tool executed…")
-- **severity** — 3 (high)
-- **tags** — `wazuh`, `mimikatz`, `T1003.001`
-- **observables** — the file **SHA256** and the **hostname**, so the analyst can pivot
+- **title** - the Wazuh rule description (e.g. "Mimikatz credential-dumping tool executed…")
+- **severity** - 3 (high)
+- **tags** - `wazuh`, `mimikatz`, `T1003.001`
+- **observables** - the file **SHA256** and the **hostname**, so the analyst can pivot
 
 Exact body: [`../shuffle/workflow-nodes.md`](../shuffle/workflow-nodes.md) → node 5.
 

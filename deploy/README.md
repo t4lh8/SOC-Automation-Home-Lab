@@ -2,8 +2,8 @@
 
 This turns the manual build guide into a near one-command deploy. Two layers:
 
-1. **Terraform** ([`terraform/`](terraform/)) — provisions the cloud VM and a locked-down firewall.
-2. **`setup.sh`** — on that VM, installs Docker and brings up Wazuh + Shuffle + TheHive.
+1. **Terraform** ([`terraform/`](terraform/)) - provisions the cloud VM and a locked-down firewall.
+2. **`setup.sh`** - on that VM, installs Docker and brings up Wazuh + Shuffle + TheHive.
 
 > The lab server stack needs **~16 GB RAM**, so it runs on a cloud VM, not a laptop.
 > The "spin up → test → destroy" pattern below keeps the cost to a few dollars.
@@ -17,7 +17,7 @@ This turns the manual build guide into a near one-command deploy. Two layers:
 
 Tight on budget? Run only part of the stack: `sudo ./setup.sh wazuh` on an 8 GB droplet.
 
-## Option A — fully automated (Terraform)
+## Option A - fully automated (Terraform)
 
 Prerequisites: a DigitalOcean account, an SSH key uploaded to it, and
 [Terraform](https://developer.hashicorp.com/terraform/downloads) installed locally.
@@ -44,7 +44,7 @@ When you're finished testing:
 terraform destroy        # stops all charges
 ```
 
-## Option B — manual VM, automated stack
+## Option B - manual VM, automated stack
 
 Already have an Ubuntu 22.04 box (any cloud, or a local VM with enough RAM)?
 Skip Terraform and just run the stack deployer:
@@ -68,7 +68,7 @@ sudo ./setup.sh                 # all three components
 
 ## After the stack is up
 
-The config in this repo (rules, agent config, workflow) still gets applied on top —
+The config in this repo (rules, agent config, workflow) still gets applied on top -
 follow the numbered guides in [`../docs/`](../docs/), starting at
 [02-wazuh-manager-setup.md](../docs/02-wazuh-manager-setup.md).
 

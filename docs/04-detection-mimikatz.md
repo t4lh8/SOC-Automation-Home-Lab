@@ -23,7 +23,7 @@ Two backstops widen the coverage:
 - **Rule 100003** matches Mimikatz command-line keywords (`sekurlsa::logonpasswords`,
   `lsadump::sam`, …) in case the PE metadata was stripped.
 - **Rule 100004** matches Sysmon **Event ID 10 (ProcessAccess)** opening `lsass.exe`
-  with the suspicious `GrantedAccess` masks used by credential dumpers — catching even
+  with the suspicious `GrantedAccess` masks used by credential dumpers - catching even
   in-memory / reflective variants.
 
 ## Testing the detection (isolated VM only)

@@ -1,13 +1,11 @@
-# Incident Response Playbook — Mimikatz Credential Dumping
+# Incident Response Playbook - Mimikatz Credential Dumping
 
-**Alert:** Wazuh rule 100002 / 100003 / 100004 (level 12–15)
-**MITRE ATT&CK:** [T1003.001 — OS Credential Dumping: LSASS Memory](https://attack.mitre.org/techniques/T1003/001/)
+**Alert:** Wazuh rule 100002 / 100003 / 100004 (level 12-15)
+**MITRE ATT&CK:** [T1003.001 - OS Credential Dumping: LSASS Memory](https://attack.mitre.org/techniques/T1003/001/)
 **Severity:** High
 
 This playbook follows the SANS incident-handling phases and matches what the lab's
 automation does (and where the analyst steps in).
-
----
 
 ## 1. Preparation
 - Detection rules deployed on the manager, Sysmon logging on the endpoint.
@@ -45,11 +43,9 @@ automation does (and where the analyst steps in).
 - Re-enable the account and host once clean.
 
 ## 6. Lessons Learned
-- Why did Mimikatz run — initial access vector? patch / hardening gap?
+- Why did Mimikatz run - initial access vector? patch / hardening gap?
 - Tune the rules if there were false positives; add detections for the delivery method.
 - Consider LSASS protection (Credential Guard, RunAsPPL) to raise the cost of the attack.
-
----
 
 ### Response times (lab target)
 | Phase | Target |

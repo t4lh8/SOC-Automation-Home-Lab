@@ -4,8 +4,6 @@ Concrete configuration for every node in the workflow. Shuffle uses `$variable`
 Liquid-style references to pull fields out of previous nodes; the exact names
 depend on your node labels, so treat the ones below as the lab's convention.
 
----
-
 ## 1. Webhook (trigger) - step 3
 
 - **Trigger type:** Webhook
