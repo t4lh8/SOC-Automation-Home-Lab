@@ -129,6 +129,13 @@ pattern keeps the cost to a few dollars.
 - Writing an **incident-response playbook** that follows the SANS phases
 - **Infrastructure as code**: provisioning the lab with Terraform and a one-command Docker deploy
 
+## Inspiration
+
+The lab architecture was inspired by [MyDFIR](https://www.youtube.com/@MyDFIR)'s
+["SOC Automation Project"](https://www.youtube.com/watch?v=ahrSFdiWzis) series. I used it
+as a starting point, then built out the detection rules, Shuffle workflow, playbook and the
+Terraform/Docker deployment myself.
+
 ## Credits
 
 - [Wazuh](https://wazuh.com/) · [Shuffle](https://shuffler.io/) · [TheHive](https://thehive-project.org/) · [Sysmon](https://learn.microsoft.com/sysinternals/downloads/sysmon) · [MITRE ATT&CK](https://attack.mitre.org/)
