@@ -11,7 +11,7 @@
 A hands-on **Security Operations Centre** built from open-source tools, wiring
 **detection → automation → enrichment → case management → response** into a single
 end-to-end workflow. The lab detects a real attack (Mimikatz credential dumping) on a
-Windows endpoint and automatically triages, enriches, documents and remediates it —
+Windows endpoint and automatically triages, enriches, documents and remediates it -
 with a human analyst approving the destructive step.
 
 ## Architecture
@@ -53,10 +53,10 @@ The reference detection is **Mimikatz credential dumping**, a technique in a lar
 share of real intrusions. The custom Wazuh rules
 ([`wazuh/manager/local_rules.xml`](wazuh/manager/local_rules.xml)) catch it three ways:
 
-- **OriginalFileName** from the PE header (Sysmon Event ID 1) — fires even if the
+- **OriginalFileName** from the PE header (Sysmon Event ID 1) - fires even if the
   attacker renames `mimikatz.exe`,
 - **command-line keywords** (`sekurlsa::logonpasswords`, `lsadump::sam`, …),
-- **suspicious LSASS memory access** (Sysmon Event ID 10) — catches renamed / in-memory variants.
+- **suspicious LSASS memory access** (Sysmon Event ID 10) - catches renamed / in-memory variants.
 
 A level-15 alert triggers the whole automation chain.
 
@@ -82,7 +82,7 @@ A level-15 alert triggers the whole automation chain.
 
 ## Deploy it
 
-**Automated (recommended)** — infrastructure as code brings the whole server stack up
+**Automated (recommended)** - infrastructure as code brings the whole server stack up
 on a cloud VM. See **[deploy/README.md](deploy/README.md)**:
 
 ```bash
@@ -95,7 +95,7 @@ terraform destroy                           # when done, to stop cloud charges
 The stack needs ~16 GB RAM, so it runs on a cloud VM; the spin-up → test → destroy
 pattern keeps the cost to a few dollars.
 
-**Manual** — follow the guides in order, starting with
+**Manual** - follow the guides in order, starting with
 **[docs/01-architecture.md](docs/01-architecture.md)**. In short:
 
 1. Stand up the **Wazuh Manager** and load the custom rules.
@@ -106,17 +106,17 @@ pattern keeps the cost to a few dollars.
 6. Trigger the attack and watch it get detected, enriched, cased, and remediated.
 
 > ⚠️ The detection test runs real credential-dumping tooling. Do it **only** on an
-> isolated lab VM with a snapshot to restore — never on a production or personal machine.
+> isolated lab VM with a snapshot to restore - never on a production or personal machine.
 
 ## Design decisions
 
-- **Detection-as-code** — the rules live in version control, not clicked into a UI, so
+- **Detection-as-code** - the rules live in version control, not clicked into a UI, so
   they're reviewable and reproducible.
-- **OriginalFileName over image name** — renaming the binary is the most common, laziest
+- **OriginalFileName over image name** - renaming the binary is the most common, laziest
   evasion; matching PE metadata defeats it.
-- **Human-in-the-loop response** — step 8 deletes files, so it waits for analyst approval.
+- **Human-in-the-loop response** - step 8 deletes files, so it waits for analyst approval.
   Fully automatic destructive actions are how automation causes its own incidents.
-- **Enrich before escalating** — VirusTotal filters out noise so the analyst only sees
+- **Enrich before escalating** - VirusTotal filters out noise so the analyst only sees
   confirmed-malicious hashes.
 
 ## What I learned

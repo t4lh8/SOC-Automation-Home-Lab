@@ -1,7 +1,7 @@
 # 7. Active Response (Automated Remediation)
 
 The final step closes the loop: after the analyst approves, the malicious file is
-removed from the endpoint automatically — no manual RDP session required.
+removed from the endpoint automatically - no manual RDP session required.
 
 ## The chain
 
@@ -32,7 +32,7 @@ Malicious file deleted, result written to active-responses.log
 Automatically deleting files the instant an alert fires is risky: a false positive,
 or an attacker deliberately triggering the rule against a legitimate file, could cause
 the automation to damage the host. Gating step 8 behind the analyst's approval keeps a
-human accountable for destructive actions — standard practice in a real SOC.
+human accountable for destructive actions - standard practice in a real SOC.
 
 ## Verify it worked
 
@@ -49,5 +49,5 @@ in the dashboard alongside the original detection.
 ## Extending the response
 
 The same mechanism can isolate the host (firewall-drop active response), disable the
-compromised user, or kill the process instead of deleting the file — swap the script
+compromised user, or kill the process instead of deleting the file - swap the script
 and register a new command.
