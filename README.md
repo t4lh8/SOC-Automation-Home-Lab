@@ -121,13 +121,14 @@ pattern keeps the cost to a few dollars.
 
 ## What I learned
 
-- Building a full **detection → automation → response** pipeline with open-source tools
-- Writing **custom Wazuh detection rules** mapped to **MITRE ATT&CK**, and how Sysmon
-  telemetry (Event ID 1 & 10) exposes credential dumping
-- **SOAR** design in Shuffle: IOC enrichment, case creation, and API-driven response
-- Where to put a **human in the loop** and why destructive automation needs a gate
-- Writing an **incident-response playbook** that follows the SANS phases
-- **Infrastructure as code**: provisioning the lab with Terraform and a one-command Docker deploy
+- Building a virtual detection lab from scratch with open-source tools
+- Writing custom Wazuh rules mapped to MITRE ATT&CK
+- Using Sysmon logs (Event ID 1 and 10) to detect credential dumping
+- Analyzing security logs and investigating phishing attacks
+- Automating alert enrichment and case creation in Shuffle and TheHive
+- Keeping a human approval step before any automated response
+- Responding to realistic incidents and writing reports based on the SANS IR phases
+- Deploying the lab with Terraform and Docker
 
 ## Inspiration
 
