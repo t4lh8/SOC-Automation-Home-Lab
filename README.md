@@ -124,7 +124,7 @@ pattern keeps the cost to a few dollars.
 - Building a virtual detection lab from scratch with open-source tools
 - Writing custom Wazuh rules mapped to MITRE ATT&CK
 - Using Sysmon logs (Event ID 1 and 10) to detect credential dumping
-- Analyzing security logs and investigating phishing attacks
+- Analyzing security logs to investigate suspicious activity
 - Automating alert enrichment and case creation in Shuffle and TheHive
 - Keeping a human approval step before any automated response
 - Responding to realistic incidents and writing reports based on the SANS IR phases
