@@ -1,0 +1,132 @@
+[
+  {
+    "name": "Mimikatz started under its own name",
+    "expect_rule": "100002",
+    "expect_level": 15,
+    "event_id": 1,
+    "data": {
+      "UtcTime": "2026-10-09 10:15:42.110",
+      "ProcessId": "6612",
+      "Image": "C:\\Users\\labuser\\Downloads\\x64\\mimikatz.exe",
+      "Description": "mimikatz for Windows",
+      "OriginalFileName": "mimikatz.exe",
+      "CommandLine": "mimikatz.exe",
+      "User": "LAB-WIN\\labuser",
+      "IntegrityLevel": "High",
+      "ParentImage": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "ParentCommandLine": "powershell.exe"
+    }
+  },
+  {
+    "name": "Mimikatz renamed to update.exe (caught by the PE header name)",
+    "expect_rule": "100002",
+    "expect_level": 15,
+    "event_id": 1,
+    "data": {
+      "UtcTime": "2026-10-09 10:17:03.441",
+      "ProcessId": "7120",
+      "Image": "C:\\Users\\labuser\\AppData\\Local\\Temp\\update.exe",
+      "Description": "mimikatz for Windows",
+      "OriginalFileName": "mimikatz.exe",
+      "CommandLine": "update.exe",
+      "User": "LAB-WIN\\labuser",
+      "IntegrityLevel": "High",
+      "ParentImage": "C:\\Windows\\explorer.exe",
+      "ParentCommandLine": "C:\\Windows\\Explorer.EXE"
+    }
+  },
+  {
+    "name": "Renamed binary with stripped metadata, caught by command line",
+    "expect_rule": "100003",
+    "expect_level": 15,
+    "event_id": 1,
+    "data": {
+      "UtcTime": "2026-10-09 10:19:11.770",
+      "ProcessId": "7344",
+      "Image": "C:\\Users\\labuser\\AppData\\Local\\Temp\\svc.exe",
+      "Description": "-",
+      "OriginalFileName": "-",
+      "CommandLine": "svc.exe \"privilege::debug\" \"sekurlsa::logonpasswords\" exit",
+      "User": "LAB-WIN\\labuser",
+      "IntegrityLevel": "High",
+      "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+      "ParentCommandLine": "cmd.exe"
+    }
+  },
+  {
+    "name": "Unknown process reads LSASS memory, 0x1010 (on top of built-in 92900)",
+    "expect_rule": "100005",
+    "expect_level": 12,
+    "event_id": 10,
+    "data": {
+      "UtcTime": "2026-10-09 10:21:29.990",
+      "SourceProcessId": "7344",
+      "SourceImage": "C:\\Users\\labuser\\AppData\\Local\\Temp\\svc.exe",
+      "TargetProcessId": "672",
+      "TargetImage": "C:\\Windows\\system32\\lsass.exe",
+      "GrantedAccess": "0x1010",
+      "CallTrace": "C:\\Windows\\SYSTEM32\\ntdll.dll+9d204|UNKNOWN(00007FF6A1B2C3D4)",
+      "SourceUser": "LAB-WIN\\labuser",
+      "TargetUser": "NT AUTHORITY\\SYSTEM"
+    }
+  },
+  {
+    "name": "Unknown process opens LSASS with full access, 0x1fffff (built-in rule misses this)",
+    "expect_rule": "100004",
+    "expect_level": 12,
+    "event_id": 10,
+    "data": {
+      "UtcTime": "2026-10-09 10:22:10.120",
+      "SourceProcessId": "7344",
+      "SourceImage": "C:\\Users\\labuser\\AppData\\Local\\Temp\\svc.exe",
+      "TargetProcessId": "672",
+      "TargetImage": "C:\\Windows\\system32\\lsass.exe",
+      "GrantedAccess": "0x1FFFFF",
+      "CallTrace": "C:\\Windows\\SYSTEM32\\ntdll.dll+9d204|UNKNOWN(00007FF6A1B2C3D4)",
+      "SourceUser": "LAB-WIN\\labuser",
+      "TargetUser": "NT AUTHORITY\\SYSTEM"
+    }
+  },
+  {
+    "name": "Normal program start (must not alert)",
+    "expect_not": [
+      "100002",
+      "100003",
+      "100004",
+      "100005"
+    ],
+    "event_id": 1,
+    "data": {
+      "UtcTime": "2026-10-09 10:24:59.980",
+      "ProcessId": "8012",
+      "Image": "C:\\Windows\\System32\\notepad.exe",
+      "Description": "Notepad",
+      "OriginalFileName": "NOTEPAD.EXE",
+      "CommandLine": "\"C:\\Windows\\system32\\notepad.exe\" C:\\Users\\labuser\\Documents\\todo.txt",
+      "User": "LAB-WIN\\labuser",
+      "IntegrityLevel": "Medium",
+      "ParentImage": "C:\\Windows\\explorer.exe",
+      "ParentCommandLine": "C:\\Windows\\Explorer.EXE"
+    }
+  },
+  {
+    "name": "Defender querying LSASS with limited rights (must not alert)",
+    "expect_not": [
+      "92900",
+      "100004",
+      "100005"
+    ],
+    "event_id": 10,
+    "data": {
+      "UtcTime": "2026-10-09 10:25:59.990",
+      "SourceProcessId": "3320",
+      "SourceImage": "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\4.18.25080.5-0\\MsMpEng.exe",
+      "TargetProcessId": "672",
+      "TargetImage": "C:\\Windows\\system32\\lsass.exe",
+      "GrantedAccess": "0x1000",
+      "CallTrace": "C:\\Windows\\SYSTEM32\\ntdll.dll+9d204",
+      "SourceUser": "NT AUTHORITY\\SYSTEM",
+      "TargetUser": "NT AUTHORITY\\SYSTEM"
+    }
+  }
+]

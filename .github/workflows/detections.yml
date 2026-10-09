@@ -1,0 +1,41 @@
+name: Detection tests
+
+on:
+  push:
+    paths:
+      - "wazuh/manager/local_rules.xml"
+      - "tests/detections/**"
+      - ".github/workflows/detections.yml"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  WAZUH_VERSION: "4.14.8-1"
+
+jobs:
+  wazuh-rules:
+    name: Replay Sysmon events through a real Wazuh manager
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Wazuh manager
+        run: |
+          curl -fsSL https://packages.wazuh.com/key/GPG-KEY-WAZUH | sudo gpg --dearmor -o /usr/share/keyrings/wazuh.gpg
+          echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" \
+            | sudo tee /etc/apt/sources.list.d/wazuh.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq "wazuh-manager=${WAZUH_VERSION}"
+
+      - name: Load custom rules and start
+        run: |
+          sudo install -o wazuh -g wazuh -m 660 wazuh/manager/local_rules.xml /var/ossec/etc/rules/local_rules.xml
+          sudo /var/ossec/bin/wazuh-analysisd -t
+          sudo /var/ossec/bin/wazuh-control start
+          for i in $(seq 1 60); do sudo test -S /var/ossec/queue/sockets/queue && break; sleep 1; done
+
+      - name: Replay events and check alerts
+        run: sudo python3 tests/detections/replay.py --summary "$GITHUB_STEP_SUMMARY"

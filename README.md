@@ -14,6 +14,20 @@ end-to-end workflow. The lab detects a real attack (Mimikatz credential dumping)
 Windows endpoint and automatically triages, enriches, documents and remediates it -
 with a human analyst approving the destructive step.
 
+## The task
+
+> **Deploy a SIEM and catch something real.** Stand up Microsoft Sentinel or Wazuh,
+> feed it logs, write one detection rule and make it fire.
+
+What I did:
+
+- Stood up **Wazuh** with Sysmon telemetry from a Windows endpoint, plus Shuffle and TheHive for the response side.
+- Wrote **four custom rules** for credential dumping (Mimikatz, MITRE T1003.001).
+- **Made them fire** against a real Wazuh 4.14 manager with a replay test, which runs in GitHub Actions on every change. The test found a real bug in one of my rules (see *What surprised me*).
+- Made the whole lab deployable on **Azure** with Terraform, so it can be brought up, attacked and torn down in an afternoon.
+
+![Detection tests against a real Wazuh manager](images/detection-tests.png)
+
 ## Architecture
 
 The architecture was designed up front (in draw.io) so each component's role and the
@@ -57,8 +71,23 @@ share of real intrusions. The custom Wazuh rules
   attacker renames `mimikatz.exe`,
 - **command-line keywords** (`sekurlsa::logonpasswords`, `lsadump::sam`, …),
 - **suspicious LSASS memory access** (Sysmon Event ID 10) - catches renamed / in-memory variants.
+  Rule 100005 builds on Wazuh's own rule 92900, and 100004 covers the access masks 92900 misses.
 
 A level-15 alert triggers the whole automation chain.
+
+### Testing the rules
+
+[`tests/detections/replay.py`](tests/detections/replay.py) sends seven Sysmon events into a
+real Wazuh manager the same way an agent does and checks which rule fired. Five should alert,
+two are normal activity that must **not** alert. The
+[Detection tests](.github/workflows/detections.yml) workflow installs Wazuh on a GitHub runner
+and runs them on every change to the rules.
+
+```bash
+sudo install -o wazuh -g wazuh -m 660 wazuh/manager/local_rules.xml /var/ossec/etc/rules/
+sudo /var/ossec/bin/wazuh-control restart
+sudo python3 tests/detections/replay.py      # 7/7 detection tests passed
+```
 
 ## What's in this repo
 
@@ -77,13 +106,24 @@ A level-15 alert triggers the whole automation chain.
 │   └── agent/           agent config + the remove-threat active-response script
 ├── shuffle/             the SOAR workflow, node by node, with request bodies
 ├── playbooks/           incident-response playbook for the detection
-└── deploy/              infrastructure as code: Terraform + one-command setup.sh
+├── tests/detections/    replay test: sample Sysmon events -> real Wazuh -> expected rule
+└── deploy/              infrastructure as code: Azure or DigitalOcean Terraform + setup.sh
 ```
 
 ## Deploy it
 
-**Automated (recommended)** - infrastructure as code brings the whole server stack up
-on a cloud VM. See **[deploy/README.md](deploy/README.md)**:
+**Azure (recommended, works with Azure for Students)** - one Linux server and one Windows
+endpoint in a private network, dashboards open only to your IP, auto-shutdown every evening:
+
+```bash
+az login
+cd deploy/azure && cp terraform.tfvars.example terraform.tfvars   # set my_ip
+terraform init && terraform apply
+# then follow the printed next steps; on the endpoint run deploy/azure/endpoint-setup.ps1
+terraform destroy
+```
+
+**DigitalOcean** - the original option, server only. See **[deploy/README.md](deploy/README.md)**:
 
 ```bash
 cd deploy/terraform && terraform apply      # provision the VM + firewall
@@ -129,6 +169,27 @@ pattern keeps the cost to a few dollars.
 - Keeping a human approval step before any automated response
 - Responding to realistic incidents and writing reports based on the SANS IR phases
 - Deploying the lab with Terraform and Docker
+- Testing detection rules automatically against a real SIEM instead of trusting that they work
+
+## What surprised me
+
+- **One of my rules never fired.** Rule 100004 (LSASS memory read) looked correct, but Wazuh's
+  built-in rule 92900 matches the same event first, and Wazuh only follows one branch. My rule was
+  never evaluated. I only found out because the test checked *which* rule fired, not just "some alert".
+- **Wazuh's own test tool cannot test Windows rules.** `wazuh-logtest` sends every event through the
+  syslog path, so Windows events never reach the eventchannel decoder. I had to read the Wazuh source
+  to see why, then send events the way an agent does.
+- Small format details matter: the decoder only accepted the event XML with single-quoted attributes,
+  exactly as Windows writes it. With double quotes it failed silently.
+
+## What I'd do differently
+
+- Run the full lab on Azure and add screenshots of the alert in Wazuh, the case in TheHive and the
+  Shuffle run. The rules are proven by the tests, the end-to-end automation still needs that proof.
+- Write rules in **Sigma** first and convert them to Wazuh, so the same detection could move to
+  Sentinel or Splunk.
+- Add more negative test cases from a real, busy Windows machine. Two benign events is not enough
+  to know the false-positive rate.
 
 ## Inspiration
 

@@ -22,9 +22,29 @@ Two backstops widen the coverage:
 
 - **Rule 100003** matches Mimikatz command-line keywords (`sekurlsa::logonpasswords`,
   `lsadump::sam`, …) in case the PE metadata was stripped.
-- **Rule 100004** matches Sysmon **Event ID 10 (ProcessAccess)** opening `lsass.exe`
-  with the suspicious `GrantedAccess` masks used by credential dumpers - catching even
-  in-memory / reflective variants.
+- **Rules 100004 and 100005** cover Sysmon **Event ID 10 (ProcessAccess)** on `lsass.exe`,
+  which also catches in-memory variants that never write `mimikatz.exe` to disk.
+  Wazuh's built-in rule 92900 already handles the common read mask `0x1010` and runs
+  first, so a custom rule for the same mask is never reached. 100005 therefore sits on
+  top of 92900, and 100004 only covers the masks 92900 misses (`0x1410`, `0x1438`,
+  `0x143a`, `0x1fffff`). The detection tests below found this.
+
+## Testing the rules without a Windows VM
+
+[`tests/detections/replay.py`](../tests/detections/replay.py) sends Sysmon events
+(the same XML Windows writes) into a real Wazuh manager the way an agent does, then
+reads `alerts.json` and checks which rule fired. The cases, including two that must
+*not* alert, are in [`tests/detections/cases.json`](../tests/detections/cases.json).
+
+```bash
+sudo install -o wazuh -g wazuh -m 660 wazuh/manager/local_rules.xml /var/ossec/etc/rules/
+sudo /var/ossec/bin/wazuh-control restart
+sudo python3 tests/detections/replay.py
+```
+
+`wazuh-logtest` cannot be used for this: it always feeds events in through the syslog
+queue, so Windows events never reach the eventchannel decoder and no Windows rule matches.
+The same test runs in GitHub Actions on every change to the rules.
 
 ## Testing the detection (isolated VM only)
 

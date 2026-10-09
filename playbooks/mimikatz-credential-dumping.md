@@ -1,6 +1,6 @@
 # Incident Response Playbook - Mimikatz Credential Dumping
 
-**Alert:** Wazuh rule 100002 / 100003 / 100004 (level 12-15)
+**Alert:** Wazuh rule 100002 / 100003 / 100004 / 100005 (level 12-15)
 **MITRE ATT&CK:** [T1003.001 - OS Credential Dumping: LSASS Memory](https://attack.mitre.org/techniques/T1003/001/)
 **Severity:** High
 

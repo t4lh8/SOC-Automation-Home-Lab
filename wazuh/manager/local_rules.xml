@@ -39,14 +39,26 @@
 
   <!--
     Suspicious access to LSASS memory (Sysmon Event ID 10 - ProcessAccess).
-    GrantedAccess 0x1010 / 0x1410 is the classic LSASS read pattern used by
-    credential dumpers, including renamed or in-memory Mimikatz.
+
+    Wazuh's built-in rule 92900 already catches the most common read mask (0x1010)
+    and is evaluated before this file, so a custom rule for the same mask never
+    fires. The detection tests in tests/detections showed this. So the work is split:
+      100004 - the masks 92900 does not cover (full access and other dumper variants)
+      100005 - sits on top of 92900, so the 0x1010 case also shows up under our rule IDs
   -->
   <rule id="100004" level="12">
     <if_group>sysmon_event_10</if_group>
     <field name="win.eventdata.targetImage" type="pcre2">(?i)lsass\.exe</field>
-    <field name="win.eventdata.grantedAccess" type="pcre2">(?i)0x1010|0x1410|0x1438|0x143a|0x1fffff</field>
+    <field name="win.eventdata.grantedAccess" type="pcre2">(?i)^(0x1410|0x1438|0x143a|0x1fffff)$</field>
     <description>Suspicious LSASS memory access from $(win.eventdata.sourceImage) (possible credential dumping)</description>
+    <mitre>
+      <id>T1003.001</id>
+    </mitre>
+  </rule>
+
+  <rule id="100005" level="12">
+    <if_sid>92900</if_sid>
+    <description>LSASS memory read by $(win.eventdata.sourceImage) (possible credential dumping)</description>
     <mitre>
       <id>T1003.001</id>
     </mitre>
